@@ -1,7 +1,24 @@
-# dag-cbor
-A Java dag-cbor implementation
+# A Java dag-cbor implementation
 
-Example usage on a custom type:
+## Usage
+Add jitpack repo:
+```xml
+<repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+</repository>
+```
+
+Include with:
+```xml
+<dependency>
+    <groupId>com.github.peergos</groupId>
+    <artifactId>dag-cbor</artifactId>
+    <version>0.1</version>
+</dependency>
+```
+
+## Example usage on a custom type
 ```java
 public record CustomType(String name, long time, Multihash ref) implements Cborable {
 
