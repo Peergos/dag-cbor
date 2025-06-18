@@ -14,7 +14,7 @@ Include with:
 <dependency>
     <groupId>com.github.peergos</groupId>
     <artifactId>dag-cbor</artifactId>
-    <version>0.1</version>
+    <version>0.1.2</version>
 </dependency>
 ```
 
