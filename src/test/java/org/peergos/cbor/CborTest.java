@@ -1,7 +1,13 @@
 package org.peergos.cbor;
 
+import io.ipfs.cid.Cid;
+import io.ipfs.multihash.Multihash;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.time.ZoneOffset;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class CborTest {
 
@@ -10,5 +16,34 @@ public class CborTest {
         CborObject.CborString orig = new CborObject.CborString("G'day mate!");
         byte[] raw = orig.serialize();
         Assert.assertArrayEquals(raw, HexUtil.hexToBytes("6b4727646179206d61746521"));
+    }
+
+    @Test
+    public void customType() {
+        CustomType orig = new CustomType("G'day!", 12345678910L, new Cid(1, Cid.Codec.DagCbor, Multihash.Type.sha2_256, new byte[32]));
+        byte[] raw = orig.serialize();
+        CustomType deserialized = CustomType.fromCbor(CborObject.fromByteArray(raw));
+        Assert.assertEquals(deserialized, orig);
+        byte[] roundTripped = deserialized.serialize();
+        Assert.assertArrayEquals(roundTripped, raw);
+    }
+
+    public record CustomType(String name, long time, Multihash ref) implements Cborable {
+
+        @Override
+        public CborObject toCbor() {
+            SortedMap<String, Cborable> state = new TreeMap<>();
+            state.put("n", new CborObject.CborString(name));
+            state.put("t", new CborObject.CborLong(time));
+            state.put("r", new CborObject.CborMerkleLink(ref));
+            return CborObject.CborMap.build(state);
+        }
+
+        public static CustomType fromCbor(Cborable cbor) {
+            if (! (cbor instanceof CborObject.CborMap))
+                throw new IllegalStateException("Invalid cbor for CustomType! " + cbor);
+            CborObject.CborMap m = (CborObject.CborMap) cbor;
+            return new CustomType(m.getString("n"), m.getLong("t"), m.getMerkleLink("r"));
+        }
     }
 }
