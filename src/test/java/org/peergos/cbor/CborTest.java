@@ -68,6 +68,42 @@ public class CborTest {
         } catch (IllegalStateException e) {}
     }
 
+    @Test
+    public void unneededExtraLengthByte() {
+        byte[] raw = HexUtil.hexToBytes("1801");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
+    public void unneededExtraLengthShort() {
+        byte[] raw = HexUtil.hexToBytes("190001");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
+    public void unneededExtraLengthInt() {
+        byte[] raw = HexUtil.hexToBytes("1a00000001");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
+    public void unneededExtraLengthLong() {
+        byte[] raw = HexUtil.hexToBytes("1b0000000000000001");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
     public record CustomType(String name, long time, Multihash ref) implements Cborable {
 
         @Override

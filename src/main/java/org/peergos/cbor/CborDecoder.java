@@ -404,12 +404,20 @@ public class CborDecoder {
             result = length;
         } else if (length == ONE_BYTE) {
             result = readUInt8();
+            if (result < ONE_BYTE)
+                throw new IllegalStateException("Non canonical cbor!");
         } else if (length == TWO_BYTES) {
             result = readUInt16();
+            if (result < 256)
+                throw new IllegalStateException("Non canonical cbor!");
         } else if (length == FOUR_BYTES) {
             result = readUInt32();
+            if (result < 65536)
+                throw new IllegalStateException("Non canonical cbor!");
         } else if (length == EIGHT_BYTES) {
             result = readUInt64();
+            if (result < 4294967296L)
+                throw new IllegalStateException("Non canonical cbor!");
         } else if (breakAllowed && length == BREAK) {
             return -1;
         }
