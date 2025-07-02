@@ -5,6 +5,7 @@ import io.ipfs.multihash.Multihash;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.nio.charset.MalformedInputException;
 import java.time.ZoneOffset;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -44,6 +45,18 @@ public class CborTest {
             CborObject.fromByteArray(raw);
             throw new RuntimeException("Should fail!");
         } catch (IllegalStateException e) {}
+    }
+
+    @Test
+    public void invalidUtf8() {
+        byte[] raw = HexUtil.hexToBytes("62c328");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (RuntimeException e) {
+            if (!(e.getCause() instanceof MalformedInputException))
+                throw new RuntimeException("Fail!");
+        }
     }
 
     @Test

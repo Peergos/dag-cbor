@@ -8,6 +8,8 @@ package org.peergos.cbor;
  */
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static org.peergos.cbor.CborConstants.*;
@@ -316,7 +318,7 @@ public class CborDecoder {
             fail("String length too long!");
         if (len > maxLen)
             fail("Invalid cbor: text string longer than original bytes!");
-        return new String(readFully(new byte[(int) len]), "UTF-8");
+        return StandardCharsets.UTF_8.newDecoder().decode(ByteBuffer.wrap(readFully(new byte[(int) len]))).toString();
     }
 
     /**
