@@ -28,6 +28,15 @@ public class CborTest {
         Assert.assertArrayEquals(roundTripped, raw);
     }
 
+    @Test
+    public void duplicateMapKeys() {
+        byte[] raw = HexUtil.hexToBytes("a2616100616101");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (Exception e) {}
+    }
+
     public record CustomType(String name, long time, Multihash ref) implements Cborable {
 
         @Override
