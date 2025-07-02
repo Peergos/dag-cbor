@@ -37,6 +37,15 @@ public class CborTest {
         } catch (Exception e) {}
     }
 
+    @Test
+    public void repeatedObject() {
+        byte[] raw = HexUtil.hexToBytes("0000");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (Exception e) {}
+    }
+
     public record CustomType(String name, long time, Multihash ref) implements Cborable {
 
         @Override

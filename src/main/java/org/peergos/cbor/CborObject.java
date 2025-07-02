@@ -41,7 +41,11 @@ public interface CborObject extends Cborable {
     int LINK_TAG = 42;
 
     static CborObject fromByteArray(byte[] cbor) {
-        return deserialize(new CborDecoder(new ByteArrayInputStream(cbor)), cbor.length);
+        ByteArrayInputStream bout = new ByteArrayInputStream(cbor);
+        CborObject res = deserialize(new CborDecoder(bout), cbor.length);
+        if (bout.available() > 0)
+            throw new IllegalStateException("Extra bytes in cbor!");
+        return res;
     }
 
     static CborObject read(InputStream in, int maxBytes) {
