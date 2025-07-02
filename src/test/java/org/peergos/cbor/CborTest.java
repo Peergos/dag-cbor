@@ -30,6 +30,14 @@ public class CborTest {
     }
 
     @Test
+    public void b3cid() {
+        byte[] raw = HexUtil.hexToBytes("d82a58250001551e208e4c7c1b99dbfd50e7a95185fead5ee1448fa904a2fdd778eaf5f2dbfd629a99");
+        CborObject cbor = CborObject.fromByteArray(raw);
+        byte[] roundTripped = cbor.serialize();
+        Assert.assertArrayEquals(roundTripped, raw);
+    }
+
+    @Test
     public void duplicateMapKeys() {
         byte[] raw = HexUtil.hexToBytes("a2616100616101");
         try {
@@ -78,8 +86,26 @@ public class CborTest {
     }
 
     @Test
+    public void unneededExtraLengthNegativeByte() {
+        byte[] raw = HexUtil.hexToBytes("3800");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
     public void unneededExtraLengthShort() {
         byte[] raw = HexUtil.hexToBytes("190001");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
+    public void unneededExtraLengthNegativeShort() {
+        byte[] raw = HexUtil.hexToBytes("390000");
         try {
             CborObject.fromByteArray(raw);
             throw new RuntimeException("Should fail!");
@@ -96,8 +122,53 @@ public class CborTest {
     }
 
     @Test
+    public void unneededExtraLengthNegativeInt() {
+        byte[] raw = HexUtil.hexToBytes("3a00000000");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
     public void unneededExtraLengthLong() {
         byte[] raw = HexUtil.hexToBytes("1b0000000000000001");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
+    public void unneededExtraLengthNegativeLong() {
+        byte[] raw = HexUtil.hexToBytes("3b0000000000000000");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
+    public void unneededExtraLengthByteString() {
+        byte[] raw = HexUtil.hexToBytes("5800");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
+    public void unneededExtraLengthString() {
+        byte[] raw = HexUtil.hexToBytes("7800");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
+    public void unneededExtraLengthArray() {
+        byte[] raw = HexUtil.hexToBytes("9800");
         try {
             CborObject.fromByteArray(raw);
             throw new RuntimeException("Should fail!");
