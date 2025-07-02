@@ -82,6 +82,8 @@ public interface CborObject extends Cborable {
                     long nValues = decoder.readMapLength();
                     if (nValues > maxGroupSize)
                         throw new IllegalStateException("Invalid cbor: more map elements than original bytes!");
+                    if (nValues < 0)
+                        throw new IllegalStateException("Invalid cbor: negative map element count!");
                     SortedMap<CborString, CborObject> result = new TreeMap<>();
                     for (long i=0; i < nValues; i++) {
                         CborString key = (CborString) deserialize(decoder, maxGroupSize);

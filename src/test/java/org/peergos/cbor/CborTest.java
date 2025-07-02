@@ -34,7 +34,7 @@ public class CborTest {
         try {
             CborObject.fromByteArray(raw);
             throw new RuntimeException("Should fail!");
-        } catch (Exception e) {}
+        } catch (IllegalStateException e) {}
     }
 
     @Test
@@ -43,7 +43,16 @@ public class CborTest {
         try {
             CborObject.fromByteArray(raw);
             throw new RuntimeException("Should fail!");
-        } catch (Exception e) {}
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
+    public void undefinedMapLength() {
+        byte[] raw = HexUtil.hexToBytes("bfff");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
     }
 
     public record CustomType(String name, long time, Multihash ref) implements Cborable {
