@@ -63,6 +63,15 @@ public class CborTest {
     }
 
     @Test
+    public void cidv0() {
+        byte[] raw = HexUtil.hexToBytes("d82a582300122022ad631c69ee983095b5b8acd029ff94aff1dc6c48837878589a92b90dfea317");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
     public void repeatedObject() {
         byte[] raw = HexUtil.hexToBytes("0000");
         try {

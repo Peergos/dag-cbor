@@ -324,6 +324,8 @@ public interface CborObject extends Cborable {
         public final Multihash target;
 
         public CborMerkleLink(Multihash target) {
+            if (target instanceof Cid && ((Cid) target).version == 0)
+                throw new IllegalStateException("dag-cbor only supports v1 cids");
             this.target = target;
         }
 
