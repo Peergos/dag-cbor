@@ -46,6 +46,14 @@ public class CborTest {
     }
 
     @Test
+    public void negativeZero() {
+        byte[] raw = HexUtil.hexToBytes("fb8000000000000000");
+        CborObject cbor = CborObject.fromByteArray(raw);
+        byte[] roundTripped = cbor.serialize();
+        Assert.assertArrayEquals(roundTripped, raw);
+    }
+
+    @Test
     public void duplicateMapKeys() {
         byte[] raw = HexUtil.hexToBytes("a2616100616101");
         try {

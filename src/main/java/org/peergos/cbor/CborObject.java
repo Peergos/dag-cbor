@@ -711,6 +711,8 @@ public interface CborObject extends Cborable {
         public final double val;
 
         public CborDouble(double val) {
+            if (! Double.isFinite(val))
+                throw new IllegalStateException("dag-cbor only supports finite doubles!");
             this.val = val;
         }
 
