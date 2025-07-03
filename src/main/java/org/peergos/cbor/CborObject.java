@@ -77,14 +77,11 @@ public interface CborObject extends Cborable {
                         decoder.readBoolean();
                         return new CborBoolean(false);
                     }
-                    if (type.getAdditionalInfo() == HALF_PRECISION_FLOAT) {
-                        return new CborHalfFloat((float)decoder.readHalfPrecisionFloat());
-                    }
-                    if (type.getAdditionalInfo() == SINGLE_PRECISION_FLOAT) {
-                        return new CborFloat(decoder.readFloat());
-                    }
                     if (type.getAdditionalInfo() == DOUBLE_PRECISION_FLOAT) {
-                        return new CborDouble(decoder.readDouble());
+                        double val = decoder.readDouble();
+                        if (!Double.isFinite(val))
+                            throw new IllegalStateException("dag-cbor only supports finite floats!");
+                        return new CborDouble(val);
                     }
                     throw new IllegalStateException("Unimplemented simple type! " + type.getAdditionalInfo());
                 case CborConstants.TYPE_MAP: {

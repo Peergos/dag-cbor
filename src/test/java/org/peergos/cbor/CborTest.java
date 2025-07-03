@@ -76,6 +76,33 @@ public class CborTest {
     }
 
     @Test
+    public void longCidTag() {
+        byte[] raw = HexUtil.hexToBytes("d9002a582500015512205891b5b522d5df086d0ff0b110fbd9d21bb4fc7163af34d08286a2e846f6be03");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
+    public void infinity() {
+        byte[] raw = HexUtil.hexToBytes("fb7ff0000000000000");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
+    public void nan() {
+        byte[] raw = HexUtil.hexToBytes("fb7ff8000000000000");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
     public void undefinedMapLength() {
         byte[] raw = HexUtil.hexToBytes("bfff");
         try {
