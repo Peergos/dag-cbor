@@ -72,6 +72,15 @@ public class CborTest {
     }
 
     @Test
+    public void dagpb() {
+        byte[] raw = HexUtil.hexToBytes("d82a58250001701220e9822efc7c48027a5429fdbd988d02b2b8e4eaee8f62c32bd1021dcf922e05de");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
     public void repeatedObject() {
         byte[] raw = HexUtil.hexToBytes("0000");
         try {
