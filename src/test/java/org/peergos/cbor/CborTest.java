@@ -46,6 +46,14 @@ public class CborTest {
     }
 
     @Test
+    public void nullCbor() {
+        byte[] raw = HexUtil.hexToBytes("f6");
+        CborObject cbor = CborObject.fromByteArray(raw);
+        byte[] roundTripped = cbor.serialize();
+        Assert.assertArrayEquals(roundTripped, raw);
+    }
+
+    @Test
     public void negativeZero() {
         byte[] raw = HexUtil.hexToBytes("fb8000000000000000");
         CborObject cbor = CborObject.fromByteArray(raw);
@@ -101,6 +109,15 @@ public class CborTest {
     @Test
     public void unsortedMap() {
         byte[] raw = HexUtil.hexToBytes("a2616201616100");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
+    public void undefined() {
+        byte[] raw = HexUtil.hexToBytes("f7");
         try {
             CborObject.fromByteArray(raw);
             throw new RuntimeException("Should fail!");
