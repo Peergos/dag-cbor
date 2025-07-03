@@ -16,7 +16,7 @@ import static org.peergos.cbor.CborConstants.*;
  * Provides an encoder capable of encoding data into CBOR format to a given {@link OutputStream}.
  */
 public class CborEncoder {
-    private static final int NEG_INT_MASK = TYPE_NEGATIVE_INTEGER << 5;
+    protected static final int NEG_INT_MASK = TYPE_NEGATIVE_INTEGER << 5;
 
     private final OutputStream m_os;
 

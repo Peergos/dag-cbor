@@ -6,7 +6,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.nio.charset.MalformedInputException;
-import java.time.ZoneOffset;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -48,6 +47,22 @@ public class CborTest {
     @Test
     public void nullCbor() {
         byte[] raw = HexUtil.hexToBytes("f6");
+        CborObject cbor = CborObject.fromByteArray(raw);
+        byte[] roundTripped = cbor.serialize();
+        Assert.assertArrayEquals(roundTripped, raw);
+    }
+
+    @Test
+    public void bigintMax() {
+        byte[] raw = HexUtil.hexToBytes("1bffffffffffffffff");
+        CborObject cbor = CborObject.fromByteArray(raw);
+        byte[] roundTripped = cbor.serialize();
+        Assert.assertArrayEquals(roundTripped, raw);
+    }
+
+    @Test
+    public void bigintMin() {
+        byte[] raw = HexUtil.hexToBytes("3bffffffffffffffff");
         CborObject cbor = CborObject.fromByteArray(raw);
         byte[] roundTripped = cbor.serialize();
         Assert.assertArrayEquals(roundTripped, raw);

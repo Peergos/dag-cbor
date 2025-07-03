@@ -4,11 +4,13 @@ import io.ipfs.cid.*;
 import io.ipfs.multihash.*;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.*;
 
 import static org.peergos.cbor.CborConstants.*;
+import static org.peergos.cbor.CborEncoder.NEG_INT_MASK;
 
 public interface CborObject extends Cborable {
 
@@ -60,10 +62,23 @@ public interface CborObject extends Cborable {
                     return new CborString(decoder.readTextString(maxGroupSize));
                 case CborConstants.TYPE_BYTE_STRING:
                     return new CborByteArray(decoder.readByteString(maxGroupSize));
-                case CborConstants.TYPE_UNSIGNED_INTEGER:
-                    return new CborLong(decoder.readInt());
-                case CborConstants.TYPE_NEGATIVE_INTEGER:
-                    return new CborLong(decoder.readInt());
+                case CborConstants.TYPE_UNSIGNED_INTEGER: {
+                    long longVal = decoder.readInt();
+                    if (longVal >= 0)
+                        return new CborLong(longVal);
+                    return new CborBigint(BigInteger.valueOf(longVal & 0x7fffffffffffffffL)
+                            .add(BigInteger.ONE.shiftLeft(63)));
+                }
+                case CborConstants.TYPE_NEGATIVE_INTEGER: {
+                    long longVal = decoder.readInt();
+                    if (longVal < 0)
+                        return new CborLong(longVal);
+                    BigInteger res = BigInteger.valueOf((longVal ^ -1L) & 0x7fffffffffffffffL)
+                            .add(BigInteger.ONE.shiftLeft(63))
+                            .add(BigInteger.ONE)
+                            .negate();
+                    return new CborBigint(res);
+                }
                 case CborConstants.TYPE_FLOAT_SIMPLE:
                     if (type.getAdditionalInfo() == CborConstants.NULL) {
                         decoder.readNull();
@@ -674,6 +689,36 @@ public interface CborObject extends Cborable {
         }
     }
 
+    final class CborBigint implements CborObject {
+        public final BigInteger val;
+
+        public CborBigint(BigInteger val) {
+            this.val = val;
+        }
+
+        @Override
+        public void serialize(CborEncoder encoder) {
+            boolean negative = val.compareTo(BigInteger.ZERO) < 0;
+            int mt = ((negative ? -1 : 0) & NEG_INT_MASK);
+            try {
+                if (negative)
+                    encoder.writeUInt64(mt, val.negate()
+                            .subtract(BigInteger.ONE.shiftLeft(63))
+                            .subtract(BigInteger.ONE)
+                            .longValue() | 1L << 63);
+                else
+                    encoder.writeUInt64(mt, val.longValue());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public List<Multihash> links() {
+            return Collections.emptyList();
+        }
+    }
+
     final class CborHalfFloat implements CborObject {
         public final float val;
 
@@ -693,6 +738,19 @@ public interface CborObject extends Cborable {
         @Override
         public List<Multihash> links() {
             return Collections.emptyList();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            CborHalfFloat that = (CborHalfFloat) o;
+            return Float.compare(val, that.val) == 0;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(val);
         }
     }
 
@@ -715,6 +773,19 @@ public interface CborObject extends Cborable {
         @Override
         public List<Multihash> links() {
             return Collections.emptyList();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            CborFloat cborFloat = (CborFloat) o;
+            return Float.compare(val, cborFloat.val) == 0;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(val);
         }
     }
 
@@ -739,6 +810,19 @@ public interface CborObject extends Cborable {
         @Override
         public List<Multihash> links() {
             return Collections.emptyList();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            CborDouble that = (CborDouble) o;
+            return Double.compare(val, that.val) == 0;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(val);
         }
     }
 

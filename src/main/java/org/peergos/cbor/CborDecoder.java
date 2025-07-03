@@ -184,7 +184,7 @@ public class CborDecoder {
         // in case of negative integers, extends the sign to all bits; otherwise zero...
         long ui = expectIntegerType(ib);
         // in case of negative integers does a ones complement
-        return ui ^ readUInt(ib & 0x1f, false /* breakAllowed */);
+        return ui ^ readUInt(ib & 0x1f, false /* breakAllowed */, true);
     }
 
     /**
@@ -301,7 +301,7 @@ public class CborDecoder {
      * @throws IOException in case of I/O problems reading the CBOR-encoded value from the underlying input stream.
      */
     public long readTag() throws IOException {
-        return readUInt(readMajorType(TYPE_TAG), false /* breakAllowed */);
+        return readUInt(readMajorType(TYPE_TAG), false /* breakAllowed */, false);
     }
 
     /**
@@ -388,7 +388,7 @@ public class CborDecoder {
      * @throws IOException in case of I/O problems reading the CBOR-encoded value from the underlying input stream.
      */
     protected long readMajorTypeWithSize(int majorType) throws IOException {
-        return readUInt(readMajorType(majorType), true /* breakAllowed */);
+        return readUInt(readMajorType(majorType), true /* breakAllowed */, false);
     }
 
     /**
@@ -398,7 +398,7 @@ public class CborDecoder {
      * @return the read unsigned integer, as long value.
      * @throws IOException in case of I/O problems reading the unsigned integer from the underlying input stream.
      */
-    protected long readUInt(int length, boolean breakAllowed) throws IOException {
+    protected long readUInt(int length, boolean breakAllowed, boolean allowBigint) throws IOException {
         long result = -1;
         if (length < ONE_BYTE) {
             result = length;
@@ -416,12 +416,12 @@ public class CborDecoder {
                 throw new IllegalStateException("Non canonical cbor!");
         } else if (length == EIGHT_BYTES) {
             result = readUInt64();
-            if (result < 4294967296L)
+            if (0 <= result && result < 4294967296L)
                 throw new IllegalStateException("Non canonical cbor!");
         } else if (breakAllowed && length == BREAK) {
             return -1;
         }
-        if (result < 0) {
+        if (!allowBigint && result < 0) {
             fail("Not well-formed CBOR integer found, invalid length: %d!", result);
         }
         return result;
@@ -483,7 +483,7 @@ public class CborDecoder {
             fail("Unexpected payload/length! Expected %s, but got %s.", lengthToString(expectedLength),
                     lengthToString(length));
         }
-        return readUInt(length, false /* breakAllowed */);
+        return readUInt(length, false /* breakAllowed */, false);
     }
 
     private byte[] readFully(byte[] buf) throws IOException {
