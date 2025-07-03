@@ -99,6 +99,15 @@ public class CborTest {
     }
 
     @Test
+    public void unsortedMap() {
+        byte[] raw = HexUtil.hexToBytes("a2616201616100");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
     public void invalidUtf8() {
         byte[] raw = HexUtil.hexToBytes("62c328");
         try {

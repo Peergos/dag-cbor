@@ -92,7 +92,10 @@ public interface CborObject extends Cborable {
                         throw new IllegalStateException("Invalid cbor: negative map element count!");
                     SortedMap<CborString, CborObject> result = new TreeMap<>();
                     for (long i=0; i < nValues; i++) {
+                        CborString last = result.isEmpty() ? null : result.lastKey();
                         CborString key = (CborString) deserialize(decoder, maxGroupSize);
+                        if (last != null && key.compareTo(last) < 0)
+                            throw new IllegalStateException("Unsorted cbor map keys!");
                         CborObject value = deserialize(decoder, maxGroupSize);
                         CborObject existing = result.put(key, value);
                         if (existing != null)
