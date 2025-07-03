@@ -77,6 +77,15 @@ public interface CborObject extends Cborable {
                         decoder.readBoolean();
                         return new CborBoolean(false);
                     }
+                    if (type.getAdditionalInfo() == HALF_PRECISION_FLOAT) {
+                        return new CborHalfFloat((float)decoder.readHalfPrecisionFloat());
+                    }
+                    if (type.getAdditionalInfo() == SINGLE_PRECISION_FLOAT) {
+                        return new CborFloat(decoder.readFloat());
+                    }
+                    if (type.getAdditionalInfo() == DOUBLE_PRECISION_FLOAT) {
+                        return new CborDouble(decoder.readDouble());
+                    }
                     throw new IllegalStateException("Unimplemented simple type! " + type.getAdditionalInfo());
                 case CborConstants.TYPE_MAP: {
                     long nValues = decoder.readMapLength();
@@ -654,6 +663,72 @@ public interface CborObject extends Cborable {
             return "CborLong{" +
                     value +
                     '}';
+        }
+    }
+
+    final class CborHalfFloat implements CborObject {
+        public final float val;
+
+        public CborHalfFloat(float val) {
+            this.val = val;
+        }
+
+        @Override
+        public void serialize(CborEncoder encoder) {
+            try {
+                encoder.writeHalfPrecisionFloat(val);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public List<Multihash> links() {
+            return Collections.emptyList();
+        }
+    }
+
+    final class CborFloat implements CborObject {
+        public final float val;
+
+        public CborFloat(float val) {
+            this.val = val;
+        }
+
+        @Override
+        public void serialize(CborEncoder encoder) {
+            try {
+                encoder.writeFloat(val);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public List<Multihash> links() {
+            return Collections.emptyList();
+        }
+    }
+
+    final class CborDouble implements CborObject {
+        public final double val;
+
+        public CborDouble(double val) {
+            this.val = val;
+        }
+
+        @Override
+        public void serialize(CborEncoder encoder) {
+            try {
+                encoder.writeDouble(val);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public List<Multihash> links() {
+            return Collections.emptyList();
         }
     }
 

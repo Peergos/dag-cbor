@@ -38,6 +38,14 @@ public class CborTest {
     }
 
     @Test
+    public void subnormal() {
+        byte[] raw = HexUtil.hexToBytes("fb0000000000000001");
+        CborObject cbor = CborObject.fromByteArray(raw);
+        byte[] roundTripped = cbor.serialize();
+        Assert.assertArrayEquals(roundTripped, raw);
+    }
+
+    @Test
     public void duplicateMapKeys() {
         byte[] raw = HexUtil.hexToBytes("a2616100616101");
         try {
