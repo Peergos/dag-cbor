@@ -43,3 +43,18 @@ CustomType example = new CustomType("Hey", 12345L, new Cid(1, Cid.Codec.DagCbor,
 byte[] raw = example.serialize();
 CustomType deserialized = CustomType.fromCbor(CborObject.fromByteArray(raw));
 ```
+
+## Java go cbrrr
+There is a benchmark giving results in the hundreds of MB/s!
+
+```shell
+Decode rate 256 MB/s for canada.json.dagcbor
+Decode rate 114 MB/s for citm_catalog.json.dagcbor
+Decode rate 195 MB/s for twitter.json.dagcbor
+
+Encode rate 146 MB/s for canada.json.dagcbor
+Encode rate 156 MB/s for citm_catalog.json.dagcbor
+Encode rate 406 MB/s for twitter.json.dagcbor
+```
+
+Benchmark data was taken from https://github.com/DavidBuchanan314/dag-cbor-benchmark
