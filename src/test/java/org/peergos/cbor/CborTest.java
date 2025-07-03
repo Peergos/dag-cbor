@@ -81,6 +81,15 @@ public class CborTest {
     }
 
     @Test
+    public void sha1() {
+        byte[] raw = HexUtil.hexToBytes("d82a58190001551114f572d396fae9206628714fb2ce00f72e94f2258f");
+        try {
+            CborObject.fromByteArray(raw);
+            throw new RuntimeException("Should fail!");
+        } catch (IllegalStateException e) {}
+    }
+
+    @Test
     public void repeatedObject() {
         byte[] raw = HexUtil.hexToBytes("0000");
         try {

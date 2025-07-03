@@ -330,6 +330,8 @@ public interface CborObject extends Cborable {
                     ((Cid) target).codec != Cid.Codec.DagCbor &&
                     ((Cid) target).codec != Cid.Codec.Raw)
                 throw new IllegalStateException("only dag-cbor and raw codecs supported");
+            if (target.getType() != Multihash.Type.sha2_256 && target.getType() != Multihash.Type.blake3)
+                throw new IllegalStateException("dag-cbor only supports sha256 and blake3");
             this.target = target;
         }
 
