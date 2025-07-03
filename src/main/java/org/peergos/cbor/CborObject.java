@@ -732,7 +732,9 @@ public interface CborObject extends Cborable {
     }
 
     final class CborNull implements CborObject, Comparable<CborNull> {
-        public CborNull() {}
+        public CborNull() {
+            throw new IllegalStateException("dag-cbor does not support null objects");
+        }
 
         @Override
         public int compareTo(CborNull cborNull) {
